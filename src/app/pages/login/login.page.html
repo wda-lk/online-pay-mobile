@@ -1,0 +1,35 @@
+<ion-content>
+  <div class="cc">
+    <div class="helper">
+      <ion-grid>
+        <ion-row>
+          <ion-col size-md="4" offset-md="4">
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title style="text-align: center;">
+                  <img src="../../../assets/images/cat.png" width="170px">
+                  <br>
+                  <h4>{{sabaName}}</h4>
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  <ion-item>
+                    <ion-label position="floating">User Name</ion-label>
+                    <ion-input [(ngModel)]="uname"></ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="floating">Password</ion-label>
+                    <ion-input type="password" [(ngModel)]="pword"></ion-input>
+                  </ion-item>
+                  <br>
+                  <ion-button expand="block" (click)="login()">Login</ion-button>
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
+  </div>
+</ion-content>

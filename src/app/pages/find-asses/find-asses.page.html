@@ -1,0 +1,241 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Search Assessment</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-row>
+    <ion-col>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>
+            Search Assessment By Assessment ID
+          </ion-card-title>
+          <ion-card-subtitle>
+            You can find your Assessment id from your K-Form
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="floating">
+              Assessment ID
+            </ion-label>
+            <ion-input [(ngModel)]="idAssess"></ion-input>
+          </ion-item>
+          <ion-button expand="full" (click)="findAssessment()">
+            <ion-icon name="search-circle-outline"></ion-icon>Find
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+
+  <ion-row>
+    <ion-grid>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Search Assessment By...</ion-card-title>
+          <ion-card-subtitle>
+            Ward, Street, Assessment No.
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label>Ward</ion-label>
+              <ion-select [(ngModel)]="selectedWard" (ngModelChange)="loadStreetCombo()">
+                <ion-select-option *ngFor="let w of wardList" [value]="w">{{w.ward_name}}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>Street</ion-label>
+              <ion-select [(ngModel)]="selectedStreet">
+                <ion-select-option *ngFor="let s of streetList" [value]="s">{{s.street_name}}</ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <ion-item>
+              <ion-label>Assessment No</ion-label>
+              <ion-input [(ngModel)]="assno"></ion-input>
+              <ion-button (click)="searchAssessment()">Search</ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+    </ion-grid>
+  </ion-row>
+
+  <ion-row>
+    <ion-grid>
+      <ion-card *ngFor="let ass of assessmentArray">
+        <ion-card-content>
+          <p>Customer Name: {{ass.cus_name}}</p>
+          <p>Assessment No: {{ass.assessment_no}}</p>
+          <p>Nature : {{ass.ass_nature_name}}</p>
+          <p>Description : {{ass.ass_discription}}</p>
+          <ion-item lines="none">
+            <ion-button slot="end" (click)="addAssessment(ass)">ADD</ion-button>
+          </ion-item>
+        </ion-card-content>
+      </ion-card>
+    </ion-grid>
+  </ion-row>
+
+
+  <ion-col>
+    <ion-card *ngIf="selectedAssessment">
+      <ion-card-header>
+        <ion-card-title>
+          Customer Name : <strong>{{selectedAssessment?.cus_name}}</strong>
+        </ion-card-title>
+        <ion-card-subtitle>
+          Assessment No : <strong>{{selectedAssessment?.assessment_no}}</strong>
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label>Ward</ion-label>{{selectedAssessment?.ward_name}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Street</ion-label>{{selectedAssessment?.street_name}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Assessment No</ion-label>{{selectedAssessment?.assessment_no}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Nature</ion-label>{{selectedAssessment?.ass_nature_name}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Description</ion-label>{{selectedAssessment?.ass_discription}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Allocation</ion-label>Rs. {{selectedAssessment?.ass_allocation | currency : ' '}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Year Amount </ion-label>Rs. {{selectedAssessment?.ass_allocation *
+            selectedAssessment?.ass_nature_year_rate /100 | currency : ' '}}
+          </ion-item>
+          <ion-item>
+            <ion-label>Quater Amount </ion-label>Rs. {{selectedAssessment?.ass_allocation *
+            selectedAssessment?.ass_nature_year_rate /400 | currency : ' '}}
+          </ion-item>
+          <br>
+          <br>
+          <ion-item style="color: green;">
+            <ion-label>From Last Year </ion-label>
+            <p class="arrears"> - {{fromLastYear| currency : ' ' }}</p>
+          </ion-item>
+          <ion-item style="color: red;">
+            <ion-label>Debit Amount </ion-label>
+            <p class="arrears">{{debit| currency : ' ' }}</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Last Year Arrears </ion-label>
+            <p class="arrears">{{selectedBalance?.lya | currency : ' '}}</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Last Year Warrant</ion-label>
+            <p class="arrears">{{selectedBalance?.lyw | currency : ' '}}</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>This Year Arrears</ion-label>
+            <p class="arrears">{{selectedBalance?.tya | currency : ' '}}</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>This Year Warrant</ion-label>
+            <p class="arrears">{{selectedBalance?.tyw | currency : ' '}}</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>This Quater Have to Pay</ion-label>
+            <p class="arrears">{{selectedBalance?.qpay | currency : ' '}}</p>
+          </ion-item>
+
+          <ion-item>
+
+
+            <ion-label>
+            Q1
+            </ion-label>
+            <ion-checkbox  disabled="{{q1d}}"  [(ngModel)]="q1" color="primary" (ngModelChange)="checkQ()"></ion-checkbox>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+
+            <ion-label>
+              Q2
+            </ion-label>
+            <ion-checkbox  disabled="{{q2d}}" [(ngModel)]="q2" color="primary" (ngModelChange)="checkQ()"></ion-checkbox>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <ion-label>
+             Q3
+            </ion-label>
+            <ion-checkbox  disabled="{{q3d}}" [(ngModel)]="q3" color="primary" (ngModelChange)="checkQ()"></ion-checkbox>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <ion-label>
+             Q4
+            </ion-label>
+            <ion-checkbox  disabled="{{q4d}}" [(ngModel)]="q4" color="primary" (ngModelChange)="checkQ()"></ion-checkbox>
+        
+
+
+          </ion-item>
+
+          <ion-item style="color: green;">
+            <ion-label>Next Year Over Paid </ion-label>
+            <p class="arrears"> {{nextYearOver | currency : ' '}}</p>
+          </ion-item>
+          <ion-item>
+            <ion-label>Total</ion-label>
+            <p class="arrears"><strong>{{tot | currency : ' ' }}</strong></p>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Payment Amount : </ion-label>
+            <ion-input [(ngModel)]="amount" type="number"></ion-input>
+          </ion-item>
+
+        </ion-list>
+
+        <ion-button *ngIf="catPay && selectedAssessment" color="danger" expand="full" (click)="goToPay()">
+          Get Payment
+        </ion-button>
+
+      </ion-card-content>
+    </ion-card>
+
+    <br>
+    <br>
+
+    <ion-card *ngIf="selectedAssessment" style="background-color: rgb(239, 235, 233)">
+      <ion-card-header>
+        <ion-card-title>
+          Payment History
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+
+          <ion-item *ngFor="let item of history">
+            <ion-label>{{item.receipt_day | date : 'yyyy-MM-dd'}}&nbsp;&nbsp;&nbsp; {{item.receipt_print_no}}
+            </ion-label>{{item.receipt_total | currency : ' ' }}
+          </ion-item>
+
+
+
+
+        </ion-list>
+
+      </ion-card-content>
+    </ion-card>
+
+  </ion-col>
+</ion-content>

@@ -1,0 +1,8 @@
+{
+  "name": "MCK PAY",
+  "integrations": {
+    "capacitor": {},
+    "cordova": {}
+  },
+  "type": "angular"
+}
